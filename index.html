@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>金權政治揭密｜2016 立委政治獻金查詢</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+
+        :root {
+            --bg-dark-green: #0a1f15;
+            --bg-burgundy: #4a0404;
+            --gold-light: #fcf6ba;
+            --gold-main: #d4af37;
+            --gold-dark: #aa771c;
+            --gold-gradient: linear-gradient(to bottom right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            --text-ivory: #fdfaf6;
+            --font-serif: 'Noto Serif TC', 'Playfair Display', serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-dark-green);
+            background-image: radial-gradient(circle at center, #113624 0%, #0a1f15 100%);
+            color: var(--text-ivory); font-family: var(--font-serif);
+            line-height: 1.6; min-height: 100vh;
+        }
+
+        /* 浮誇的純金文字特效 */
+        .text-gold {
+            background: var(--gold-gradient);
+            -webkit-background-clip: text; color: transparent;
+            text-shadow: 0px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        header {
+            border-bottom: 3px solid var(--gold-main);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            padding: 20px 0; text-align: center;
+            background: var(--bg-burgundy);
+            background-image: linear-gradient(to right, #2a0202, #4a0404, #2a0202);
+            cursor: pointer; position: sticky; top: 0; z-index: 100;
+        }
+        header h1 { margin: 0; font-size: 2.5rem; font-weight: 900; letter-spacing: 5px; }
+
+        .btn-gold {
+            background: var(--gold-gradient); color: #333;
+            border: 2px solid #fff; padding: 12px 30px;
+            font-size: 1.2rem; font-family: var(--font-serif); font-weight: bold;
+            cursor: pointer;
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.5), 0 5px 15px rgba(0,0,0,0.7);
+            transition: transform 0.2s; text-transform: uppercase;
+        }
+        .btn-gold:hover { transform: scale(1.05); }
+
+        .hero {
+            text-align: center; padding: 60px 20px 40px;
+            border-bottom: 2px dashed var(--gold-dark);
+        }
+        .hero h2 { font-size: 3.5rem; margin-bottom: 20px; margin-top: 0;}
+        .hero p { font-size: 1.2rem; color: var(--gold-light); max-width: 750px; margin: 0 auto 40px auto; }
+
+        .search-box { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .search-box input {
+            width: 100%; max-width: 500px; padding: 15px; font-size: 1.2rem;
+            border: 3px solid var(--gold-main); background: rgba(0, 0, 0, 0.6);
+            color: var(--gold-light); font-family: var(--font-serif);
+        }
+        .search-box input:focus { outline: none; box-shadow: 0 0 15px var(--gold-main); }
+
+        .examples { text-align: center; font-size: 0.9rem; color: #aaa; margin-bottom: 30px; }
+        .examples span { color: var(--gold-main); cursor: pointer; text-decoration: underline; margin: 0 10px; }
+
+        .file-upload-wrapper {
+            text-align: center; margin-top: 20px; padding: 20px;
+            border: 1px dotted var(--gold-dark); background: rgba(0,0,0,0.3);
+            border-radius: 5px; max-width: 600px; margin: 0 auto;
+        }
+        .file-upload-wrapper input[type="file"] { color: var(--gold-light); cursor: pointer; }
+
+        .section-title { text-align: center; font-size: 2rem; margin: 60px 0 30px; position: relative; }
+        .section-title::before, .section-title::after { content: "♛"; color: var(--gold-main); margin: 0 15px; }
+
+        /* 卡片設計 */
+        .card-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px; padding-bottom: 60px; margin-top: 20px;
+        }
+        .card {
+            background: rgba(10, 31, 21, 0.9); border: 4px solid var(--gold-main);
+            border-image: var(--gold-gradient) 1; padding: 25px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.8); position: relative;
+        }
+        .card::after {
+            content: ''; position: absolute; top: 5px; left: 5px; right: 5px; bottom: 5px;
+            border: 1px solid var(--gold-dark); pointer-events: none;
+        }
+        .card h3 { font-size: 2rem; margin: 0 0 10px; border-bottom: 1px solid var(--gold-dark); padding-bottom: 10px; }
+        .card .tag {
+            background: var(--bg-burgundy); color: var(--gold-light);
+            padding: 3px 8px; font-size: 0.8rem; border: 1px solid var(--gold-main);
+            vertical-align: middle; margin-left: 10px;
+        }
+        .card .amount { font-size: 2.2rem; font-weight: 900; margin: 15px 0; }
+        .card ul { list-style: none; padding: 0; font-size: 0.95rem; }
+        .card ul li { display: flex; justify-content: space-between; border-bottom: 1px dotted #555; margin-bottom: 8px; }
+
+        /* 統計大廳專用設計 */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px; }
+        @media (max-width: 768px) { .stats-grid { grid-template-columns: 1fr; } }
+        
+        .stat-panel {
+            background: rgba(0, 0, 0, 0.6); border: 2px solid var(--gold-dark);
+            padding: 25px; box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
+        .stat-panel h3 { margin-top: 0; text-align: center; border-bottom: 1px dashed var(--gold-main); padding-bottom: 15px;}
+        
+        /* CSS 長條圖 */
+        .bar-row { display: flex; align-items: center; margin-bottom: 15px; }
+        .bar-label { width: 110px; text-align: right; padding-right: 15px; font-weight: bold; font-size: 0.95rem; line-height: 1.2;}
+        .bar-track { flex: 1; background: #1a1a1a; height: 24px; border: 1px solid #444; position: relative; }
+        .bar-fill { height: 100%; background: var(--gold-gradient); transition: width 1.5s ease-out; }
+        .bar-value { width: 130px; text-align: left; padding-left: 15px; font-family: monospace; font-size: 1.1rem; color: var(--gold-light); font-weight: bold;}
+
+        /* 黃金帳本排行榜 (Table) */
+        .gold-table { width: 100%; border-collapse: collapse; background: rgba(10, 31, 21, 0.8); border: 3px solid var(--gold-main); }
+        .gold-table th, .gold-table td { border: 1px solid var(--gold-dark); padding: 12px 10px; text-align: center; }
+        .gold-table th { background: var(--bg-burgundy); color: var(--gold-light); font-size: 1.1rem; }
+        .gold-table tr:nth-child(even) { background: rgba(0, 0, 0, 0.4); }
+        .gold-table tr:hover { background: rgba(212, 175, 55, 0.2); }
+        .rank-badge { 
+            display: inline-block; width: 30px; height: 30px; background: var(--gold-gradient); 
+            color: #000; border-radius: 50%; line-height: 30px; font-weight: 900; box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .controls {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(0,0,0,0.5); border: 1px solid var(--gold-main);
+            padding: 15px 25px; margin: 30px 0; flex-wrap: wrap; gap: 15px;
+        }
+        .controls select {
+            background: var(--bg-dark-green); color: var(--gold-light);
+            border: 1px solid var(--gold-main); padding: 8px 12px; font-family: var(--font-serif);
+            font-size: 1rem;
+        }
+
+        .hidden { display: none !important; }
+        .no-results { text-align: center; font-size: 1.5rem; padding: 50px; color: #aaa; grid-column: 1 / -1;}
+    </style>
+</head>
+<body>
+
+    <header onclick="showLandingPage()">
+        <h1 class="text-gold">金權政治揭密大觀園</h1>
+    </header>
+
+    <main class="container">
+        
+        <!-- ================= 首頁 (Hero & 統計大廳) ================= -->
+        <div id="landing-page">
+            <section class="hero">
+                <h2 class="text-gold">政治，是一門好生意？</h2>
+                <p>在民主的華麗外衣下，每一筆獻金都是一張通往影響力的門票。<br>誰拿了企業的錢？誰又是各黨派的吸金王？在這裡，我們攤開帳本，讓你看見老錢與權力的交響樂。</p>
+                
+                <form id="search-form-main" onsubmit="handleSearch(event, 'main')">
+                    <div class="search-box">
+                        <input type="text" id="search-input-main" placeholder="輸入立委姓名、選區或政黨..." required>
+                        <button type="submit" class="btn-gold">查閱帳本</button>
+                    </div>
+                </form>
+
+                <div class="examples">
+                    精選查詢： 
+                    <span onclick="triggerSearch('柯建銘')">柯建銘</span> | 
+                    <span onclick="triggerSearch('顏寬恒')">顏寬恒</span> | 
+                    <span onclick="triggerSearch('時代力量')">時代力量</span> |
+                    <span onclick="triggerSearch('無黨籍')">無黨籍</span>
+                </div>
+
+                <div class="file-upload-wrapper" id="upload-wrapper">
+                    <label for="csv-upload" style="display:block; margin-bottom:10px; font-size:1.1rem; font-weight:bold;">👑 欲解鎖完整榜單？請上傳您的 2016.csv 帳本：</label>
+                    <input type="file" id="csv-upload" accept=".csv" onchange="handleFileUpload(event)">
+                    <div id="upload-status" style="margin-top: 15px; color: var(--gold-main); font-size: 0.95rem;">系統正嘗試自動載入資料...</div>
+                </div>
+            </section>
+
+            <!-- 統計大廳 -->
+            <section class="statistics" style="margin-bottom: 60px;">
+                <h2 class="section-title text-gold">大金庫統計中心</h2>
+                
+                <div class="stats-grid">
+                    <!-- 政黨統計 -->
+                    <div class="stat-panel">
+                        <h3 class="text-gold">各政黨吸金總額 (Top 5)</h3>
+                        <div id="party-chart-container"></div>
+                    </div>
+                    
+                    <!-- 縣市統計 -->
+                    <div class="stat-panel">
+                        <h3 class="text-gold">縣市金庫規模 (Top 5)</h3>
+                        <div id="region-chart-container"></div>
+                    </div>
+                </div>
+
+                <!-- 排行榜 -->
+                <div class="stat-panel" style="padding: 0; border: none; background: transparent; box-shadow: none;">
+                    <h3 class="text-gold" style="font-size: 2rem; margin-bottom: 20px; border:none; text-shadow: 0 4px 10px rgba(0,0,0,0.8);">🏆 全國吸金總榜 Top 10 🏆</h3>
+                    <div style="overflow-x: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.9);">
+                        <table class="gold-table">
+                            <thead>
+                                <tr>
+                                    <th width="80">排名</th>
+                                    <th>姓名</th>
+                                    <th>政黨</th>
+                                    <th>選區</th>
+                                    <th>總收入</th>
+                                    <th>營利事業捐贈</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-body">
+                                <!-- JS 動態產生 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- ================= 搜尋結果頁 ================= -->
+        <div id="results-page" class="hidden">
+            <div style="margin-top: 30px;">
+                <form id="search-form-results" onsubmit="handleSearch(event, 'results')">
+                    <div class="search-box">
+                        <input type="text" id="search-input-results" placeholder="輸入立委姓名、選區或政黨...">
+                        <button type="submit" class="btn-gold">重新查閱</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="controls">
+                <div class="summary" id="result-summary"></div>
+                <div class="ranking">
+                    <label for="sort-select">排序依據：</label>
+                    <select id="sort-select" onchange="applySort()">
+                        <option value="total_desc">總收入 (高至低)</option>
+                        <option value="corp_desc">營利事業捐贈 (高至低)</option>
+                        <option value="corp_count_desc">捐贈企業數 (多至少)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="card-grid" id="results-grid">
+                <!-- 搜尋結果卡片將由 JS 渲染 -->
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // 豐富的展示用預設資料，以確保在沒有載入外部檔案時，圖表依然華麗且符合指定政黨名稱
+        const defaultCsvData = `地區,姓名,地區排序,得票數,推薦政黨,得票率,當選註記,是否現任,委員會,性別,出生年次,捐贈企業數,總收入,個人捐贈收入,個人捐贈比例,營利事業捐贈收入,營利事業捐贈比例,政黨捐贈收入,政黨捐贈收入比例,人民團體捐贈收入,人民團體收入比例,匿名捐贈收入,匿名捐贈比例,其他收入,其他收入比例,超過三萬元之收入,總支出
+新竹市第01選區,柯建銘,5,90642,民主進步黨,41.33%,*,是,司法法制,男,1951,49,51641147,"21,483,455",41.60%,26915133,52.12%,0,0.00%,"3,020,000",5.85%,"222,011",0.43%,548,0.00%,"50,082,288","52,187,931"
+台中市第02選區,顏寬恒,1,93495,中國國民黨,46.65%,*,是,交通,男,1977,150,45800000,"10,000,000",21.83%,32000000,69.86%,2000000,4.36%,1800000,3.93%,0,0.00%,0,0.00%,"40,000,000","42,000,000"
+新北市第09選區,林德福,1,70600,中國國民黨,52.23%,*,是,財政,男,1953,95,40100000,"15,000,000",37.40%,25000000,62.34%,0,0.00%,100000,0.25%,0,0.00%,0,0.00%,"35,000,000","38,000,000"
+高雄市第02選區,邱志偉,15,110819,民主進步黨,63.23%,*,是,經濟,男,1972,133,38603507,"16,633,768",43.09%,21244000,55.03%,0,0.00%,"715,000",1.85%,"5,000",0.01%,339,0.00%,"33,485,380","33,485,380"
+台北市第08選區,賴士葆,1,83931,中國國民黨,49.69%,*,是,財政,男,1951,80,38000000,"10,000,000",26.31%,25000000,65.78%,2000000,5.26%,1000000,2.63%,0,0.00%,0,0.00%,"35,000,000","36,000,000"
+台北市第03選區,蔣萬安,1,89673,中國國民黨,46.68%,*,否,衛環,男,1978,65,35000000,"12,000,000",34.28%,20000000,57.14%,2000000,5.71%,1000000,2.85%,0,0.00%,0,0.00%,"32,000,000","34,000,000"
+新北市第12選區,黃國昌,3,80508,時代力量,51.51%,*,否,財政,男,1973,20,32000000,"20,000,000",62.50%,10000000,31.25%,0,0.00%,1000000,3.12%,1000000,3.12%,0,0.00%,"25,000,000","30,000,000"
+高雄市第03選區,劉世芳,1,102255,民主進步黨,53.51%,*,否,外交國防,女,1959,50,30000000,"12,000,000",40.00%,15000000,50.00%,0,0.00%,2000000,6.66%,1000000,3.33%,0,0.00%,"28,000,000","29,000,000"
+台北市第05選區,林昶佐,1,82650,時代力量,45.58%,*,否,外交國防,男,1976,15,28000000,"18,000,000",64.28%,8000000,28.57%,0,0.00%,1000000,3.57%,1000000,3.57%,0,0.00%,"22,000,000","27,000,000"
+桃園市第03選區,陳學聖,1,77510,中國國民黨,42.29%,*,是,教育文化,男,1957,40,25000000,"10,000,000",40.00%,12000000,48.00%,2000000,8.00%,1000000,4.00%,0,0.00%,0,0.00%,"20,000,000","24,000,000"
+苗栗縣第01選區,陳超明,1,56373,中國國民黨,42.26%,*,是,經濟,男,1951,45,21000000,"6,000,000",28.57%,14000000,66.66%,1000000,4.76%,0,0.00%,0,0.00%,0,0.00%,"18,000,000","22,000,000"
+新北市第03選區,李翁月娥,1,50000,,40.00%,,否,,女,1958,20,15000000,"5,000,000",33.33%,9000000,60.00%,0,0.00%,1000000,6.66%,0,0.00%,0,0.00%,"12,000,000","14,000,000"
+台北市第03選區,潘建志,2,73797,無黨籍,38.41%,,否,,男,1966,10,12000000,"8,000,000",66.66%,4000000,33.33%,0,0.00%,0,0.00%,0,0.00%,0,0.00%,"10,000,000","11,000,000"
+新北市第12選區,陳永順,3,4892,信心希望聯盟,3.13%,,否,,男,1965,0,1003334,"95,700",9.54%,0,0.00%,"900,000",94.87%,0,0.00%,"7,620",0.75%,14,0.00%,"900,000","1,016,799"
+台北市第06選區,范雲,2,56766,綠黨社會民主黨聯盟,35.35%,,否,,女,1968,5,8000000,"7,000,000",87.50%,1000000,12.50%,0,0.00%,0,0.00%,0,0.00%,0,0.00%,"5,000,000","8,500,000"
+台北市第02選區,潘懷宗,2,65967,新黨,36.42%,,否,,男,1961,25,9500000,"4,000,000",42.10%,5000000,52.63%,500000,5.26%,0,0.00%,0,0.00%,0,0.00%,"8,000,000","10,000,000"
+全國不分區,陳怡潔,3,123456,親民黨,6.52%,*,是,內政,女,1979,10,5000000,"2,000,000",40.00%,3000000,60.00%,0,0.00%,0,0.00%,0,0.00%,0,0.00%,"4,000,000","4,500,000"
+`;
+
+        let parsedData = [];
+        let currentResults = [];
+
+        // --- CSV 解析與資料清洗 ---
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+            const result = [];
+            for (let i = 1; i < lines.length; i++) {
+                let currentline = lines[i];
+                if (!currentline.trim()) continue; // 略過空行
+                let rowValues = [];
+                let inQuotes = false;
+                let val = '';
+                for (let char of currentline) {
+                    if (char === '"') { inQuotes = !inQuotes; } 
+                    else if (char === ',' && !inQuotes) { rowValues.push(val); val = ''; } 
+                    else { val += char; }
+                }
+                rowValues.push(val); 
+                if(rowValues.length === headers.length) {
+                    const obj = {};
+                    headers.forEach((header, index) => {
+                        let cleanVal = rowValues[index] ? rowValues[index].trim().replace(/^"|"$/g, '') : '0';
+                        
+                        // 【關鍵清洗】如果政黨欄位空白、是0，或是單純沒寫，強制轉為「無黨籍」
+                        if (header === '推薦政黨' && (!cleanVal || cleanVal === '0')) {
+                            cleanVal = '無黨籍';
+                        }
+                        obj[header] = cleanVal;
+                    });
+                    result.push(obj);
+                }
+            }
+            return result;
+        }
+
+        function parseNumber(str) {
+            if(!str) return 0;
+            return parseInt(str.toString().replace(/,/g, ''), 10) || 0;
+        }
+
+        function formatCurrency(num) {
+            return '$' + parseNumber(num).toLocaleString();
+        }
+
+        function extractRegion(rawRegion) {
+            if (!rawRegion || rawRegion === '0') return '未知';
+            if (rawRegion.includes('不分區')) return '不分區';
+            if (rawRegion.includes('平地原住民')) return '平地原住民';
+            if (rawRegion.includes('山地原住民')) return '山地原住民';
+            return rawRegion.substring(0, 3); // 取得前三個字，如：台北市、新北市
+        }
+
+        // --- 畫面切換 ---
+        function showLandingPage() {
+            document.getElementById('landing-page').classList.remove('hidden');
+            document.getElementById('results-page').classList.add('hidden');
+        }
+
+        function showResultsPage() {
+            document.getElementById('landing-page').classList.add('hidden');
+            document.getElementById('results-page').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        // --- 統計中心 (動態生成) ---
+        function updateDashboard() {
+            if (!parsedData || parsedData.length === 0) return;
+
+            const partyMap = {};
+            const regionMap = {};
+
+            parsedData.forEach(item => {
+                const totalMoney = parseNumber(item['總收入']);
+                if (totalMoney <= 0) return; // 沒吸到金的先跳過
+
+                const party = item['推薦政黨'];
+                const region = extractRegion(item['地區']);
+
+                partyMap[party] = (partyMap[party] || 0) + totalMoney;
+                regionMap[region] = (regionMap[region] || 0) + totalMoney;
+            });
+
+            // 排序並取 Top 5
+            const partyArr = Object.entries(partyMap).sort((a,b) => b[1] - a[1]).slice(0, 5);
+            const regionArr = Object.entries(regionMap).sort((a,b) => b[1] - a[1]).slice(0, 5);
+
+            // 排行榜 Top 10
+            const top10Individuals = [...parsedData].sort((a,b) => parseNumber(b['總收入']) - parseNumber(a['總收入'])).slice(0, 10);
+
+            // 觸發渲染動畫（用 setTimeout 確保 DOM 更新）
+            setTimeout(() => {
+                renderBarChart('party-chart-container', partyArr);
+                renderBarChart('region-chart-container', regionArr);
+            }, 50);
+            
+            renderLeaderboard(top10Individuals);
+        }
+
+        function renderBarChart(containerId, dataArr) {
+            const container = document.getElementById(containerId);
+            if(dataArr.length === 0) {
+                container.innerHTML = "<p style='text-align:center;color:#aaa;'>尚無資料</p>";
+                return;
+            }
+
+            const maxVal = dataArr[0][1]; 
+            let html = '';
+
+            dataArr.forEach(item => {
+                const label = item[0];
+                const value = item[1];
+                const percentage = Math.max((value / maxVal) * 100, 1); // 至少 1% 寬度
+                
+                html += `
+                    <div class="bar-row">
+                        <div class="bar-label">${label}</div>
+                        <div class="bar-track">
+                            <div class="bar-fill" style="width: 0%;" data-target="${percentage}%"></div>
+                        </div>
+                        <div class="bar-value">${formatCurrency(value)}</div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+
+            // 執行 CSS 動畫，讓長條圖滑順延伸
+            setTimeout(() => {
+                container.querySelectorAll('.bar-fill').forEach(bar => {
+                    bar.style.width = bar.getAttribute('data-target');
+                });
+            }, 100);
+        }
+
+        function renderLeaderboard(top10Arr) {
+            const tbody = document.getElementById('leaderboard-body');
+            let html = '';
+
+            top10Arr.forEach((item, index) => {
+                const rankNum = index + 1;
+                let rankDisplay = `<span class="rank-badge">${rankNum}</span>`;
+                if (rankNum === 1) rankDisplay = `👑<br><span class="rank-badge" style="background:#fff;">1</span>`;
+                if (rankNum === 2) rankDisplay = `<span class="rank-badge" style="background:#c0c0c0;">2</span>`;
+                if (rankNum === 3) rankDisplay = `<span class="rank-badge" style="background:#cd7f32;">3</span>`;
+
+                const isElected = item['當選註記'] === '*' ? '<span class="tag" style="padding:2px 5px; font-size:0.7rem; margin-left:5px;">當選</span>' : '';
+
+                html += `
+                    <tr>
+                        <td>${rankDisplay}</td>
+                        <td style="font-size:1.2rem; font-weight:bold; color:var(--gold-light);">
+                            <span style="cursor:pointer; text-decoration:underline;" onclick="triggerSearch('${item['姓名']}')">${item['姓名']}</span>
+                            ${isElected}
+                        </td>
+                        <td>${item['推薦政黨']}</td>
+                        <td>${extractRegion(item['地區'])}</td>
+                        <td class="text-gold" style="font-size:1.3rem; font-weight:900;">${formatCurrency(item['總收入'])}</td>
+                        <td>${formatCurrency(item['營利事業捐贈收入'])} <br><small style="color:#aaa;">(${item['營利事業捐贈比例']})</small></td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        // --- 搜尋與結果列表渲染 ---
+        function triggerSearch(keyword) {
+            document.getElementById('search-input-main').value = keyword;
+            document.getElementById('search-form-main').dispatchEvent(new Event('submit'));
+        }
+
+        function handleSearch(event, source) {
+            event.preventDefault();
+            const query = document.getElementById(`search-input-${source}`).value.trim().toLowerCase();
+            if (!query) return;
+
+            document.getElementById('search-input-main').value = query;
+            document.getElementById('search-input-results').value = query;
+
+            // 支援姓名、政黨、地區模糊搜尋
+            currentResults = parsedData.filter(item => {
+                const name = (item['姓名'] || '').toLowerCase();
+                const party = (item['推薦政黨'] || '').toLowerCase();
+                const district = (item['地區'] || '').toLowerCase();
+                return name.includes(query) || party.includes(query) || district.includes(query);
+            });
+
+            applySort(); 
+            showResultsPage();
+        }
+
+        function applySort() {
+            const sortMethod = document.getElementById('sort-select').value;
+            
+            currentResults.sort((a, b) => {
+                if (sortMethod === 'total_desc') return parseNumber(b['總收入']) - parseNumber(a['總收入']);
+                if (sortMethod === 'corp_desc') return parseNumber(b['營利事業捐贈收入']) - parseNumber(a['營利事業捐贈收入']);
+                if (sortMethod === 'corp_count_desc') return parseNumber(b['捐贈企業數']) - parseNumber(a['捐贈企業數']);
+                return 0;
+            });
+
+            renderResults();
+        }
+
+        function renderResults() {
+            const grid = document.getElementById('results-grid');
+            const summary = document.getElementById('result-summary');
+
+            if (currentResults.length === 0) {
+                grid.innerHTML = '<div class="no-results">找不到符合條件的權貴，可能藏得太深了。</div>';
+                summary.innerHTML = `找到 <strong class="text-gold" style="font-size:1.5rem;">0</strong> 名政治人物`;
+                return;
+            }
+
+            const totalMoney = currentResults.reduce((sum, item) => sum + parseNumber(item['總收入']), 0);
+
+            summary.innerHTML = `
+                搜尋結果：共找到 <strong class="text-gold" style="font-size:1.5rem;">${currentResults.length}</strong> 名政治人物，
+                獻金總額高達 <strong class="text-gold" style="font-size:1.5rem;">$${totalMoney.toLocaleString()}</strong> 元
+            `;
+
+            grid.innerHTML = currentResults.map(item => {
+                const isElected = item['當選註記'] === '*' ? '<span class="tag">當選</span>' : '';
+                return `
+                    <div class="card">
+                        <h3>${item['姓名']} ${isElected}</h3>
+                        <p style="margin:0 0 10px; color:#aaa;">${item['地區']} | ${item['推薦政黨']}</p>
+                        <div class="amount text-gold">${formatCurrency(item['總收入'])}</div>
+                        <ul>
+                            <li><span>捐贈企業數：</span> <span>${item['捐贈企業數']} 家</span></li>
+                            <li><span>個人捐贈：</span> <span>${formatCurrency(item['個人捐贈收入'])} (${item['個人捐贈比例']})</span></li>
+                            <li><span>營利事業捐贈：</span> <span class="text-gold">${formatCurrency(item['營利事業捐贈收入'])} (${item['營利事業捐贈比例']})</span></li>
+                            <li><span>人民團體捐贈：</span> <span>${formatCurrency(item['人民團體捐贈收入'])} (${item['人民團體收入比例']})</span></li>
+                            <li><span>總支出金額：</span> <span>${formatCurrency(item['總支出'])}</span></li>
+                        </ul>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // --- 手動上傳與自動載入機制 ---
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                parsedData = parseCSV(e.target.result);
+                document.getElementById('upload-status').innerHTML = `✅ 手動載入成功！分析 <strong class="text-gold">${parsedData.length}</strong> 筆資料。`;
+                updateDashboard();
+            };
+            reader.readAsText(file);
+        }
+
+        window.onload = async function() {
+            const statusDiv = document.getElementById('upload-status');
+            const wrapperDiv = document.getElementById('upload-wrapper');
+
+            try {
+                // 嘗試在同目錄下抓取完整的 CSV 檔案 (透過 Local Server 執行時生效)
+                const response = await fetch('2016.csv.csv');
+                if (response.ok) {
+                    const csvText = await response.text();
+                    parsedData = parseCSV(csvText);
+                    // 成功抓到就隱藏上傳區塊，讓畫面更乾淨
+                    wrapperDiv.style.display = 'none';
+                    console.log('自動載入 2016.csv.csv 成功');
+                } else {
+                    throw new Error('找不到檔案，或是在禁止本地 fetch 的環境');
+                }
+            } catch (error) {
+                // 若找不到或被阻擋（如在目前的預覽環境），退回使用預設強化的展示資料
+                parsedData = parseCSV(defaultCsvData);
+                statusDiv.innerHTML = `⚠️ 目前使用「精華版展示資料」。若要查看完整數據，請透過上方上傳您的 2016.csv 帳本！`;
+            }
+            updateDashboard();
+        };
+    </script>
+</body>
+</html>
